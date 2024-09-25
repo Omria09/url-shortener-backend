@@ -116,7 +116,12 @@ function validateAndEncapsulateUrl(inputUrl) {
       return url.href;
   } catch (error) {
       // If the input is invalid, make it valid
-      const sanitizedUrl = `https://www.${inputUrl.replace(/^(https?:\/\/)?(www\.)?/, '')}`;
+      var sanitizedUrl = `https://www.${inputUrl.replace(/^(https?:\/\/)?(www\.)?/, '')}`;
+      //recursion for the fun
+      if (sanitizedUrl.includes('link.ktzr.lol'))
+      {
+        return sanitizedUrl.replace('www.',''); 
+      }
       return sanitizedUrl;
   }
 }
