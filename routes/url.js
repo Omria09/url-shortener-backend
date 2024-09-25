@@ -69,10 +69,9 @@ router.get('/:shortUrl', async (req, res) => {
   if (urlEntry) {
     urlEntry.clicks++;
     await urlEntry.save();
-    
-    const referer = req.headers['referer']; // Get the referer header
 
-    // Check if the request is from localhost
+    const referer = req.headers['referer']; // Get the referer header
+     // Check if the request is from localhost
     if (referer && referer.startsWith('http://localhost')) {
       return res.redirect(urlEntry.originalUrl); // Redirect to the original URL
     } else {
