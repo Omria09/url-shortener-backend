@@ -80,7 +80,7 @@ router.get('/:shortUrl', async (req, res) => {
   } else {
     const userAgent = req.headers['user-agent'];
     // Check if the request is from a browser
-    if (userAgent.includes('Mozilla')) {
+    if (userAgent && userAgent.includes('Mozilla')) {
       return res.redirect(`${fronted}?message=Invalid URL.. URL expired or did not exist.`); //if broweser, redirect to default page
     }else{
       return res.status(404).json({ error: 'Invalid URL.' }); //if not a browser, send error message (for postman etc..)
