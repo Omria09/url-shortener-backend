@@ -120,7 +120,7 @@ function validateAndEncapsulateUrl(inputUrl) {
       //recursion for the fun
       if (sanitizedUrl.includes('link.ktzr.lol'))
       {
-        return sanitizedUrl.replace('www.',''); 
+        sanitizedUrl = sanitizedUrl.replace('www.',''); 
       }
       return sanitizedUrl;
   }
