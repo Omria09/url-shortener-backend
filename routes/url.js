@@ -34,10 +34,10 @@ router.delete('/:shortUrl', async (req, res) => {
 
 // Create short URL
 router.post('/shorten', async (req, res) => {
-  const { originalUrl } = req.body;
-  if (!originalUrl.includes('.'))
-  {
-    res.status(201).json({ error: 'Invalid URL.' });
+  var { originalUrl } = req.body;
+  originalUrl = validateAndEncapsulateUrl(originalUrl);
+  if (!originalUrl) {
+    res.status(400).json({ error: 'Invalid URL.' });
     return;
   }
   const existingUrl = await Url.findOne({ originalUrl });
@@ -87,5 +87,38 @@ router.get('/:shortUrl', async (req, res) => {
     }
   }
 });
+
+
+function validateAndEncapsulateUrl(inputUrl) {
+  // Check if URL is valid
+  if (!inputUrl.includes('.'))
+  {
+    return null;
+  }
+  // input URL to lowercase
+  inputUrl = inputUrl.toLowerCase();
+
+  // Check if URL contains spaces
+  if (inputUrl.includes(' ')) {
+    return null;
+  }  
+
+  try {
+      // Create a new URL object to validate the URL
+      const url = new URL(inputUrl);
+      
+      // Check if the protocol is HTTPS
+      if (url.protocol !== 'https:') {
+          throw new Error('Invalid protocol');
+      }
+      
+      // Return the valid URL
+      return url.href;
+  } catch (error) {
+      // If the input is invalid, make it valid
+      const sanitizedUrl = `https://www.${inputUrl.replace(/^(https?:\/\/)?(www\.)?/, '')}`;
+      return sanitizedUrl;
+  }
+}
 
 module.exports = router;
