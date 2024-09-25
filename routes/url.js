@@ -61,6 +61,7 @@ router.get('/', (req, res) => {
   res.json({ message: 'Hello World' });
 });
 
+// Get original URL
 router.get('/:shortUrl', async (req, res) => {
   const { shortUrl } = req.params;
   const urlEntry = await Url.findOne({ shortUrl });
@@ -68,7 +69,15 @@ router.get('/:shortUrl', async (req, res) => {
   if (urlEntry) {
     urlEntry.clicks++;
     await urlEntry.save();
-    return res.json({ originalUrl: urlEntry.originalUrl }); // Return the original URL
+    
+    const referer = req.headers['referer']; // Get the referer header
+
+    // Check if the request is from localhost
+    if (referer && referer.startsWith('http://localhost')) {
+      return res.redirect(urlEntry.originalUrl); // Redirect to the original URL
+    } else {
+      return res.json({ originalUrl: urlEntry.originalUrl }); // Return JSON response if not from localhost
+    }
   } else {
     const userAgent = req.headers['user-agent'];
     // Check if the request is from a browser
@@ -79,32 +88,5 @@ router.get('/:shortUrl', async (req, res) => {
     }
   }
 });
-
-// Redirect to original URL
-// router.get('/:shortUrl', async (req, res) => {
-//   const { shortUrl } = req.params;
-//   const originalUrl = await Url.findOne({ shortUrl });
-
-//   if (originalUrl) {
-//     originalUrl.clicks++;
-//     await originalUrl.save();
-//     if (!originalUrl.originalUrl.includes('http://') && !originalUrl.originalUrl.includes('https://')) // check if address has https/http
-//     {
-//       return res.redirect('https://' + originalUrl.originalUrl); //if not, add default https (secure http).
-//     }
-//     else
-//     {
-//       return res.redirect(originalUrl.originalUrl);
-//     }
-//   } else {
-//     const userAgent = req.headers['user-agent'];
-//     // Check if the request is from a browser
-//     if (userAgent && userAgent.includes('Mozilla')) {
-//       return res.redirect(`${fronted}?message=Invalid URL.. URL expired or did not exist.`); //if broweser, redirect to default page
-//     }else{
-//       return res.status(404).json({ error: 'Invalid URL.' }); //if not a browser, send error message (for postman etc..)
-//     }
-//   }
-// });
 
 module.exports = router;
