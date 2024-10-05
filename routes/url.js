@@ -95,8 +95,6 @@ function validateAndEncapsulateUrl(inputUrl) {
   {
     return null;
   }
-  // input URL to lowercase
-  inputUrl = inputUrl.toLowerCase();
 
   // Check if URL contains spaces
   if (inputUrl.includes(' ')) {
